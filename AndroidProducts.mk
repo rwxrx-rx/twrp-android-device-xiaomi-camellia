@@ -5,7 +5,7 @@
 #
 
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/twrp_everpal.mk
+    $(LOCAL_DIR)/twrp_camellia.mk
 
 COMMON_LUNCH_CHOICES := \
-    twrp_everpal-eng
+    twrp_camellia-eng

@@ -62,10 +62,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_VENDOR_PROPERTIES += \
     ro.hardware.gatekeeper=beanpod
 
-# Kernel
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)-kernel/Image.gz:kernel
-
 # Keymaster
 TARGET_RECOVERY_DEVICE_MODULES += \
     libkeymaster4 \

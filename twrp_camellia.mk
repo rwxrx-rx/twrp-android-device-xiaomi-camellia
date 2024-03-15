@@ -12,10 +12,17 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
 $(call inherit-product, vendor/twrp/config/common.mk)
 
 # Inherit from everpal device
-$(call inherit-product, device/xiaomi/everpal/device.mk)
+$(call inherit-product, device/xiaomi/camellia/device.mk)
 
 # Device identifier. This must come after all inclusions
-PRODUCT_DEVICE := everpal
-PRODUCT_NAME := twrp_everpal
+PRODUCT_DEVICE := camellia
+PRODUCT_NAME := twrp_camellia
 PRODUCT_BRAND := xiaomi
 PRODUCT_MANUFACTURER := xiaomi
+
+PRODUCT_GMS_CLIENTID_BASE := android-xiaomi
+
+PRODUCT_BUILD_PROP_OVERRIDES += \
+    PRIVATE_BUILD_DESC="camellia-user 12 SP1A.210812.016 V14.0.6.0.TKSIDXM release-keys"
+
+BUILD_FINGERPRINT := Redmi/camellia/camellia:12/SP1A.210812.016/V14.0.6.0.TKSIDXM:user/release-keys

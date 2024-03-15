@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-DEVICE_PATH := device/xiaomi/everpal
+DEVICE_PATH := device/xiaomi/camellia
 
 # For building with minimal manifest
 ALLOW_MISSING_DEPENDENCIES := true
@@ -64,18 +64,13 @@ BOARD_MKBOOTIMG_ARGS += --dtb_offset $(BOARD_DTB_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
 
 # Bootloader
-TARGET_BOOTLOADER_BOARD_NAME := everpal
+TARGET_BOOTLOADER_BOARD_NAME := camellia
 TARGET_NO_BOOTLOADER := true
 
 # Build
 BUILD_BROKEN_DUP_RULES := true
 BUILD_BROKEN_PREBUILT_ELF_FILES := true
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
-
-# Kernel
-BOARD_PREBUILT_DTBIMAGE_DIR := $(DEVICE_PATH)-kernel/dtb
-BOARD_PREBUILT_DTBOIMAGE := $(DEVICE_PATH)-kernel/dtbo.img
-TARGET_NO_KERNEL_OVERRIDE := true
 
 # Metadata
 BOARD_USES_METADATA_PARTITION := true
