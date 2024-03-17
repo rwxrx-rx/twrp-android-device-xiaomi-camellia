@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-FDEVICE="everpal"
+FDEVICE="camellia"
 
 fox_get_target_device() {
 local chkdev=$(echo "$BASH_SOURCE" | grep -w $FDEVICE)
@@ -47,15 +47,15 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 	export FOX_RECOVERY_BOOT_PARTITION="/dev/block/by-name/boot"
 
 	# Asserts
-	export FOX_TARGET_DEVICES="evergo,evergreen,everpal,opal"
-	export TARGET_DEVICE_ALT="evergo,evergreen,opal"
+	export FOX_TARGET_DEVICES="camellia,camellian"
+	export TARGET_DEVICE_ALT="camellia,camellian"
 
 	# Flashlight
 	export OF_FL_PATH1="/system/flashlight"
 
 	# R11.1 Settings
 	export FOX_VERSION="R11.1"
-	export OF_MAINTAINER="Sushrut1101"
+	export OF_MAINTAINER="Sabrina"
 
 	# Magisk
 	function download_magisk(){
