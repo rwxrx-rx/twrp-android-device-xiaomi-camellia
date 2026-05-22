@@ -1,0 +1,19 @@
+# NVT touchscreen wake fix
+# At recovery boot the fb_notifier never fires on its own, so the NVT driver
+# stays in wakeup-gesture mode and never emits normal touch events to userspace.
+# Toggling /sys/class/graphics/fb0/blank fires the SCREEN-ON notifier, which
+# calls nvt_ts_resume and switches the driver to normal touch reporting.
+# Author: cristi, 2026-05-22.
+
+service nvt_touch_wake /system/bin/sh -c "echo 4 > /sys/class/graphics/fb0/blank; sleep 1; echo 0 > /sys/class/graphics/fb0/blank"
+    class core
+    user root
+    group root
+    oneshot
+    seclabel u:r:recovery:s0
+
+on boot
+    start nvt_touch_wake
+
+on property:twrp.gui_started=1
+    start nvt_touch_wake
