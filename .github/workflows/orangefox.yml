@@ -89,18 +89,19 @@ jobs:
         git clone https://gitlab.com/OrangeFox/sync.git
         cd sync
         
-        # Eksekusi sinkronisasi dengan branch murni (contoh: 12.1)
+        # Eksekusi sinkronisasi
         ./orangefox_sync.sh --branch ${{ github.event.inputs.MANIFEST_BRANCH }} --path ${{ github.workspace }}/OrangeFox
 
     - name: Clone Device Tree
       run: |
-        # Script otomatis membuat folder bernama fox_12.1, kita masuk ke sana
-        cd ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
+        # Langsung masuk ke folder OrangeFox utama
+        cd ${{ github.workspace }}/OrangeFox
         git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ${{ github.event.inputs.DEVICE_PATH }}
 
     - name: Build OrangeFox
       run: |
-        cd ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
+        # Eksekusi Build di folder OrangeFox
+        cd ${{ github.workspace }}/OrangeFox
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL="C"
@@ -112,5 +113,5 @@ jobs:
       with:
         name: OrangeFox-${{ github.event.inputs.DEVICE_NAME }}
         path: |
-          ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.zip
-          ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.img
+          ${{ github.workspace }}/OrangeFox/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.zip
+          ${{ github.workspace }}/OrangeFox/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.img
