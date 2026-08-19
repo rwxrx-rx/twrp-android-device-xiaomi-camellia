@@ -101,3 +101,6 @@ PRODUCT_TARGET_VNDK_VERSION := 31
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/bin/inject_selinux.sh:recovery/root/system/bin/inject_selinux.sh
 
+# Touchfix NVT script hook
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/recovery/root/system/bin/runatboot.sh:recovery/root/system/bin/runatboot.sh
