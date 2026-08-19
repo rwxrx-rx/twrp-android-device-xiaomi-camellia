@@ -32,8 +32,8 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 	export FOX_USE_SED_BINARY=1
 	export FOX_USE_XZ_UTILS=1
 	export FOX_USE_NANO_EDITOR=1
-    	export FOX_DELETE_AROMAFM=1
-    	export FOX_BUGGED_AOSP_ARB_WORKAROUND="1616300800"; # Sun 21 Mar 04:26:40 GMT 2021
+    export FOX_DELETE_AROMAFM=1
+    export FOX_BUGGED_AOSP_ARB_WORKAROUND="1616300800"; # Sun 21 Mar 04:26:40 GMT 2021
 
 	# Screen Settings
 	export OF_SCREEN_H=2400
@@ -55,7 +55,7 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 
 	# R11.1 Settings
 	export FOX_MAINTAINER_PATCH_VERSION=1
-	export OF_MAINTAINER="Sabrina"
+	export OF_MAINTAINER="mt6833"
 
 	# Magisk
 	function download_magisk(){
