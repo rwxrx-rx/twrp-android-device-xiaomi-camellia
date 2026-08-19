@@ -69,10 +69,12 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
+        sudo rm -f /etc/apt/apt-mirrors.txt
+        sudo sed -i 's/azure.archive.ubuntu.com/archive.ubuntu.com/g' /etc/apt/sources.list
         sudo apt-get update -y
         sudo apt-get install -y tzdata
         sudo apt-get install -y --no-install-recommends git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig rsync python2 python3 python-is-python3
-
+        
     - name: Install Repo Tool
       run: |
         mkdir -p ~/bin
