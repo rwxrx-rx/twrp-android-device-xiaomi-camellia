@@ -21,7 +21,7 @@ on:
         required: true
         default: 'fox_12.1'
       DEVICE_PATH:
-        description: 'Device Tree Path (e.g., device/xiaomi/mt6833)'
+        description: 'Device Tree Path (e.g., device/xiaomi/camellia)'
         required: true
         default: 'device/xiaomi/camellia'
       DEVICE_NAME:
@@ -82,24 +82,23 @@ jobs:
         sudo ln -sf ~/bin/repo /usr/bin/repo
 
     - name: Set-up Manifest
-      if: github.event.inputs.MANIFEST_BRANCH == '11.0' || github.event.inputs.MANIFEST_BRANCH == '12.1' || github.event.inputs.MANIFEST_BRANCH == '14.1'
       run: |
-        mkdir -p ${GITHUB_WORKSPACE}/OrangeFox
-        cd ${GITHUB_WORKSPACE}/OrangeFox
+        mkdir -p ${{ github.workspace }}/OrangeFox
+        cd ${{ github.workspace }}/OrangeFox
         git config --global user.name "Samuel Kendall"
         git config --global user.email "kinguser981@gmail.com"
         git clone https://gitlab.com/OrangeFox/sync.git
         cd sync
-        ./orangefox_sync.sh --branch ${{ github.event.inputs.MANIFEST_BRANCH }} --path ${GITHUB_WORKSPACE}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
+        ./orangefox_sync.sh --branch ${{ github.event.inputs.MANIFEST_BRANCH }} --path ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
 
     - name: Clone Device Tree
       run: |
-        cd workspace
+        cd ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
         git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ${{ github.event.inputs.DEVICE_PATH }}
 
     - name: Build OrangeFox
       run: |
-        cd workspace
+        cd ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL="C"
@@ -111,5 +110,5 @@ jobs:
       with:
         name: OrangeFox-${{ github.event.inputs.DEVICE_NAME }}
         path: |
-          workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.zip
-          workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.img
+          ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.zip
+          ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.img
