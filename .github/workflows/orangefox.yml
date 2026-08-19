@@ -86,7 +86,7 @@ jobs:
         mkdir workspace
         cd workspace
         echo "Syncing OrangeFox Manifest..."
-        repo init -u https://gitlab.com/OrangeFox/Manifest.git -b ${{ github.event.inputs.MANIFEST_BRANCH }} --depth=1
+        repo init -u https://gitlab.com/OrangeFox/sync.git -b ${{ github.event.inputs.MANIFEST_BRANCH }} --depth=1
         repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
 
     - name: Clone Device Tree
