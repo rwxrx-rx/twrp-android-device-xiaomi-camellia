@@ -96,3 +96,8 @@ PRODUCT_SYSTEM_PROPERTIES += \
 
 # VNDK
 PRODUCT_TARGET_VNDK_VERSION := 31
+
+# Inject SELinux Enforcing script for decryption fix
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/recovery/root/system/bin/inject_selinux.sh:recovery/root/system/bin/inject_selinux.sh
+
