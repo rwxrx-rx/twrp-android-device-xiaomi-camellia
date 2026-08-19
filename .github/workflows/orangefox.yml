@@ -1,0 +1,100 @@
+name: Build OrangeFox Recovery
+
+on:
+  workflow_dispatch:
+    inputs:
+      MANIFEST_BRANCH:
+        description: 'OrangeFox Manifest Branch (e.g., fox_12.1 or fox_11.0)'
+        required: true
+        default: 'fox_12.1'
+        type: choice
+        options:
+          - fox_12.1
+          - fox_11.0
+          - fox_9.0
+      DEVICE_TREE_URL:
+        description: 'Device Tree Repository URL'
+        required: true
+        default: 'https://github.com/rwxrx-rx/twrp-android-device-xiaomi-camellia'
+      DEVICE_TREE_BRANCH:
+        description: 'Device Tree Branch'
+        required: true
+        default: 'fox_12.1'
+      DEVICE_PATH:
+        description: 'Device Tree Path (e.g., device/xiaomi/camellia)'
+        required: true
+        default: 'device/xiaomi/camellia'
+      DEVICE_NAME:
+        description: 'Device Codename (e.g., camellia)'
+        required: true
+        default: 'camellia'
+      MAKEFILE_NAME:
+        description: 'Makefile Prefix (twrp or omni)'
+        required: true
+        default: 'twrp'
+        type: choice
+        options:
+          - twrp
+          - omni
+      BUILD_TARGET:
+        description: 'Build Target (recoveryimage, bootimage, or vendor_bootimage)'
+        required: true
+        default: 'bootimage'
+        type: choice
+        options:
+          - recoveryimage
+          - bootimage
+          - vendor_bootimage
+
+jobs:
+  build:
+    name: Build OFOX by ${{ github.actor }}
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+
+    steps:
+    - name: Cleanup & Check Free Space
+      uses: rokibhasansagar/slimhub_actions@main
+
+    - name: Update & Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig
+
+    - name: Install Repo Tool
+      run: |
+        mkdir -p ~/bin
+        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        chmod a+x ~/bin/repo
+        sudo ln -sf ~/bin/repo /usr/bin/repo
+
+    - name: Initialize Workspace & Sync Source
+      run: |
+        mkdir workspace
+        cd workspace
+        echo "Syncing OrangeFox Manifest..."
+        repo init -u https://gitlab.com/OrangeFox/Manifest.git -b ${{ github.event.inputs.MANIFEST_BRANCH }} --depth=1
+        repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
+
+    - name: Clone Device Tree
+      run: |
+        cd workspace
+        git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ${{ github.event.inputs.DEVICE_PATH }}
+
+    - name: Build OrangeFox
+      run: |
+        cd workspace
+        source build/envsetup.sh
+        export ALLOW_MISSING_DEPENDENCIES=true
+        export LC_ALL="C"
+        lunch ${{ github.event.inputs.MAKEFILE_NAME }}_${{ github.event.inputs.DEVICE_NAME }}-eng
+        mka adbd ${{ github.event.inputs.BUILD_TARGET }}
+
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: OrangeFox-${{ github.event.inputs.DEVICE_NAME }}
+        path: |
+          workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.zip
+          workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.img
