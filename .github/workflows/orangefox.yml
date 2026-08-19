@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       MANIFEST_BRANCH:
-        description: 'OrangeFox Manifest Branch (e.g., fox_12.1 or fox_11.0)'
+        description: 'OrangeFox Branch (Pilih Angkanya Saja: 12.1 / 11.0)'
         required: true
-        default: 'fox_12.1'
+        default: '12.1'
         type: choice
         options:
-          - fox_12.1
-          - fox_11.0
-          - fox_9.0
+          - '12.1'
+          - '11.0'
+          - '9.0'
       DEVICE_TREE_URL:
         description: 'Device Tree Repository URL'
         required: true
@@ -21,15 +21,15 @@ on:
         required: true
         default: 'fox_12.1'
       DEVICE_PATH:
-        description: 'Device Tree Path (e.g., device/xiaomi/camellia)'
+        description: 'Device Tree Path'
         required: true
         default: 'device/xiaomi/camellia'
       DEVICE_NAME:
-        description: 'Device Codename (e.g., camellia)'
+        description: 'Device Codename'
         required: true
         default: 'camellia'
       MAKEFILE_NAME:
-        description: 'Makefile Prefix (twrp or omni)'
+        description: 'Makefile Prefix (twrp / omni)'
         required: true
         default: 'twrp'
         type: choice
@@ -37,7 +37,7 @@ on:
           - twrp
           - omni
       BUILD_TARGET:
-        description: 'Build Target (recoveryimage, bootimage, or vendor_bootimage)'
+        description: 'Build Target'
         required: true
         default: 'bootimage'
         type: choice
@@ -81,24 +81,26 @@ jobs:
         chmod a+x ~/bin/repo
         sudo ln -sf ~/bin/repo /usr/bin/repo
 
-    - name: Set-up Manifest
+    - name: Set-up Manifest & Sync
       run: |
         mkdir -p ${{ github.workspace }}/OrangeFox
-        cd ${{ github.workspace }}/OrangeFox
         git config --global user.name "Samuel Kendall"
         git config --global user.email "kinguser981@gmail.com"
         git clone https://gitlab.com/OrangeFox/sync.git
         cd sync
-        ./orangefox_sync.sh --branch ${{ github.event.inputs.MANIFEST_BRANCH }} --path ${{ github.workspace }}/OrangeFox/${{ github.event.inputs.MANIFEST_BRANCH }}
+        
+        # Eksekusi sinkronisasi dengan branch murni (contoh: 12.1)
+        ./orangefox_sync.sh --branch ${{ github.event.inputs.MANIFEST_BRANCH }} --path ${{ github.workspace }}/OrangeFox
 
     - name: Clone Device Tree
       run: |
-        cd ${{ github.workspace }}/OrangeFox/${{ github.event.inputs.MANIFEST_BRANCH }}
+        # Script otomatis membuat folder bernama fox_12.1, kita masuk ke sana
+        cd ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
         git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ${{ github.event.inputs.DEVICE_PATH }}
 
     - name: Build OrangeFox
       run: |
-        cd ${{ github.workspace }}/OrangeFox/${{ github.event.inputs.MANIFEST_BRANCH }}
+        cd ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL="C"
@@ -110,5 +112,5 @@ jobs:
       with:
         name: OrangeFox-${{ github.event.inputs.DEVICE_NAME }}
         path: |
-          ${{ github.workspace }}/OrangeFox/${{ github.event.inputs.MANIFEST_BRANCH }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.zip
-          ${{ github.workspace }}/OrangeFox/${{ github.event.inputs.MANIFEST_BRANCH }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.img
+          ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.zip
+          ${{ github.workspace }}/OrangeFox/fox_${{ github.event.inputs.MANIFEST_BRANCH }}/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.img
