@@ -1,5 +1,4 @@
 #!/system/bin/sh
-
 # Wait for /data to be ready
 sleep 2
 
@@ -21,5 +20,4 @@ EOF
 
 # Set execution permission
 chmod 755 /data/adb/service.d/selinux_fix.sh
-
 log -t OrangeFox "SELinux Enforcing script successfully injected to /data!"
