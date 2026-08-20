@@ -58,7 +58,7 @@ service keymaster-4-1-beanpod /vendor/bin/hw/android.hardware.keymaster@4.1-serv
     disabled
     seclabel u:r:recovery:s0
 
-service inject_selinux /system/bin/inject_selinux.sh
+service inject_selinux /system/bin/sh /system/bin/inject_selinux.sh
     user root
     group root
     disabled
