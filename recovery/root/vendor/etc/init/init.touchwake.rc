@@ -1,0 +1,21 @@
+# NVT touchscreen wake fix
+# At recovery boot the fb_notifier never fires on its own, so the NVT driver
+# stays in wakeup-gesture mode and never emits normal touch events to userspace.
+# Toggling /sys/class/graphics/fb0/blank fires the SCREEN-ON notifier, which
+# calls nvt_ts_resume and switches the driver to normal touch reporting.
+#
+# This only fixes the *first* boot. If the TWRP screen blanks again later
+# (timeout / power button) the driver drops back into gesture mode and stays
+# stuck until reboot — nvt_touch_wake_watch keeps watching and re-fires the
+# same toggle on every subsequent wake, not just at boot.
+
+service nvt_touch_wake_watch /system/bin/sh /vendor/etc/init/camellia_touchwake.sh
+    class core
+    user root
+    group root
+    seclabel u:r:recovery:s0
+    # not oneshot: runs continuously so init respawns it if it ever dies
+
+on boot
+    start nvt_touch_wake
+    start nvt_touch_wake_watch
