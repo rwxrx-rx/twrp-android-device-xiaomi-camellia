@@ -24,6 +24,7 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 	export FOX_VANILLA_BUILD=1
 	export FOX_ENABLE_APP_MANAGER=1
 	export FOX_VIRTUAL_AB_DEVICE=1
+	export FOX_VARIANT="A_B"
 	export FOX_RECOVERY_SYSTEM_PARTITION="/dev/block/mapper/system"
 	export FOX_RECOVERY_VENDOR_PARTITION="/dev/block/mapper/vendor"
 	export FOX_USE_BASH_SHELL=1
@@ -32,15 +33,15 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 	export FOX_USE_SED_BINARY=1
 	export FOX_USE_XZ_UTILS=1
 	export FOX_USE_NANO_EDITOR=1
-    export FOX_DELETE_AROMAFM=1
-    export FOX_BUGGED_AOSP_ARB_WORKAROUND="1616300800"; # Sun 21 Mar 04:26:40 GMT 2021
+	export FOX_DELETE_AROMAFM=1
+	export FOX_BUGGED_AOSP_ARB_WORKAROUND="1616300800"; # Sun 21 Mar 04:26:40 GMT 2021
 
 	# Screen Settings
 	export OF_SCREEN_H=2400
 	export OF_STATUS_H=100
 	export OF_STATUS_INDENT_LEFT=48
 	export OF_STATUS_INDENT_RIGHT=48
-  	export OF_HIDE_NOTCH=1
+	export OF_HIDE_NOTCH=1
 	export OF_CLOCK_POS=1
 
 	# MediaTek
@@ -50,8 +51,8 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 	export FOX_TARGET_DEVICES="camellia,camellian"
 	export TARGET_DEVICE_ALT="camellia,camellian"
 
-	# Flashlight
-	export OF_FL_PATH1="/system/flashlight"
+	# UI Settings (Flashlight disabled)
+	export OF_FLASHLIGHT_ENABLE=0
 
 	# R11.1 Settings
 	export OF_FIX_DECRYPTION_ON_DATA_MEDIA=1
@@ -59,30 +60,10 @@ if [ "$1" = "$FDEVICE" -o "$FOX_BUILD_DEVICE" = "$FDEVICE" ]; then
 	export FOX_MAINTAINER_PATCH_VERSION=1
 	export OF_MAINTAINER="mt6833"
 
-	# Magisk
-	function download_magisk(){
-		# Usage: download_magisk <destination_path>
-		local DEST=$1
-		if [ -n "${DEST}" ]; then
-			if [ ! -e ${DEST} ]; then
-				echo "Downloading the Latest Release of Magisk..."
-				local LATEST_MAGISK_URL=$(curl -sL https://api.github.com/repos/topjohnwu/Magisk/releases/latest | grep "browser_download_url" | grep ".apk" | cut -d : -f 2,3 | tr -d '"')
-				mkdir -p $(dirname ${DEST})
-				wget -q ${LATEST_MAGISK_URL} -O ${DEST} || wget ${LATEST_MAGISK_URL} -O ${DEST}
-				local RCODE=$?
-				if [ "$RCODE" = "0" ]; then
-					echo "Successfully Downloaded Magisk to ${DEST}!"
-					echo "Done!"
-				else
-					echo "Failed to Download Magisk to ${DEST}!"
-				fi
-			fi
-		fi
-	}
-	export FOX_USE_SPECIFIC_MAGISK_ZIP=~/Magisk/Magisk.zip
-	download_magisk $FOX_USE_SPECIFIC_MAGISK_ZIP
+	# Remove Magisk Addon (Optimized for KernelSU environments)
+	export FOX_DELETE_MAGISK_ADDON=1
 
-	# let's see what are our build VARs
+	# Build Log Output
 	if [ -n "$FOX_BUILD_LOG_FILE" -a -f "$FOX_BUILD_LOG_FILE" ]; then
 		export | grep "FOX" >> $FOX_BUILD_LOG_FILE
 		export | grep "OF_" >> $FOX_BUILD_LOG_FILE
