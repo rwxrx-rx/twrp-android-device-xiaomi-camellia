@@ -70,23 +70,23 @@ jobs:
         DEBIAN_FRONTEND: noninteractive
       run: |
         echo "https://archive.ubuntu.com/ubuntu/" | sudo tee /etc/apt/apt-mirrors.txt
-        sudo apt-get update -y
-        sudo apt-get install -y tzdata
-        sudo apt-get install -y --no-install-recommends git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig rsync python2 python3 python-is-python3
+        sudo apt-get update -q -y
+        sudo apt-get install -q -y tzdata
+        sudo apt-get install -q -y --no-install-recommends git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig rsync python2 python3 python-is-python3
 
     - name: Install Repo Tool
       run: |
         mkdir -p ~/bin
-        curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
+        curl -s https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
         chmod a+x ~/bin/repo
         sudo ln -sf ~/bin/repo /usr/bin/repo
 
     - name: Set-up Manifest & Sync
       run: |
         mkdir -p ${{ github.workspace }}/OrangeFox
-        git config --global user.name "Samuel Kendall"
-        git config --global user.email "kinguser981@gmail.com"
-        git clone https://gitlab.com/OrangeFox/sync.git
+        git config --global user.name "Runner"
+        git config --global user.email "runner@github.actions"
+        git clone -q https://gitlab.com/OrangeFox/sync.git
         cd sync
         
         # Synchronization execution
@@ -94,33 +94,71 @@ jobs:
 
     - name: Clone Device Tree
       run: |
-        # Go directly to the main OrangeFox folder
         cd ${{ github.workspace }}/OrangeFox
-        git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ${{ github.event.inputs.DEVICE_PATH }}
+        git clone -q ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ${{ github.event.inputs.DEVICE_PATH }}
 
     - name: Build OrangeFox
       run: |
         cd ${{ github.workspace }}/OrangeFox
         
-        # 1. Temporarily turn off strict mode so that minor errors in vendorsetup.sh are ignored.
+        # Temporarily turn off strict mode so minor errors in vendorsetup.sh are ignored
         set +e
         
-        # 2. Initialize environment & lunch
+        # Initialize environment & lunch
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL="C"
         lunch ${{ github.event.inputs.MAKEFILE_NAME }}_${{ github.event.inputs.DEVICE_NAME }}-eng
         
-        # 3.  Turn strict mode back on so that if compilation fails, the log is read.
+        # Turn strict mode back on
         set -e
         
-        # 4. Start compiling
+        # Start compiling
         mka adbd ${{ github.event.inputs.BUILD_TARGET }}
 
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v4
+    - name: Prepare Release Assets
+      run: |
+        cd ${{ github.workspace }}/OrangeFox/out/target/product/${{ github.event.inputs.DEVICE_NAME }}
+        mkdir -p ${{ github.workspace }}/release-assets
+        
+        echo "Organizing build artifacts for release..."
+        
+        # 1. Main OrangeFox Flashable ZIP
+        OFOX_ZIP=$(ls OrangeFox-*.zip 2>/dev/null | head -n 1)
+        if [ -n "$OFOX_ZIP" ]; then
+          cp "$OFOX_ZIP" ${{ github.workspace }}/release-assets/OrangeFox-${{ github.event.inputs.DEVICE_NAME }}.zip
+          echo "Found and prepared ZIP: $OFOX_ZIP"
+        fi
+        
+        # 2. Standalone Recovery Image
+        OFOX_IMG=$(ls OrangeFox-*.img 2>/dev/null | head -n 1)
+        if [ -n "$OFOX_IMG" ]; then
+          cp "$OFOX_IMG" ${{ github.workspace }}/release-assets/recovery.img
+          echo "Found and prepared IMG: $OFOX_IMG -> recovery.img"
+        elif [ -f "boot.img" ]; then
+          # Fallback for A/B devices building bootimage
+          cp boot.img ${{ github.workspace }}/release-assets/recovery.img
+          echo "Prepared raw boot.img -> recovery.img"
+        fi
+
+    - name: Generate Release Tag
+      id: tag
+      run: echo "release_tag=$(date +'%Y%m%d_%H%M')" >> $GITHUB_OUTPUT
+
+    - name: Publish to GitHub Releases
+      uses: softprops/action-gh-release@v2
       with:
-        name: OrangeFox-${{ github.event.inputs.DEVICE_NAME }}
-        path: |
-          ${{ github.workspace }}/OrangeFox/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.zip
-          ${{ github.workspace }}/OrangeFox/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/OrangeFox*.img
+        tag_name: OFOX-${{ github.event.inputs.DEVICE_NAME }}-${{ steps.tag.outputs.release_tag }}
+        name: OrangeFox Recovery - ${{ github.event.inputs.DEVICE_NAME }}
+        files: |
+          ${{ github.workspace }}/release-assets/*
+        draft: false
+        prerelease: false
+
+    - name: Upload Build Artifacts (Fallback)
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: OFOX-Artifacts-${{ github.event.inputs.DEVICE_NAME }}
+        path: ${{ github.workspace }}/release-assets/*
+        retention-days: 30
