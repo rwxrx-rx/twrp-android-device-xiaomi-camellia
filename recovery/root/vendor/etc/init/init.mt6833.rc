@@ -65,6 +65,12 @@ service inject_selinux /system/bin/sh /system/bin/inject_selinux.sh
     oneshot
     seclabel u:r:recovery:s0
 
-# Trigger automatically when decryption is successful
+service inject_selinux /system/bin/sh /system/bin/inject_selinux.sh
+    user root
+    group root
+    disabled
+    oneshot
+    seclabel u:r:recovery:s0
+
 on property:twrp.decrypt.done=true
     start inject_selinux
