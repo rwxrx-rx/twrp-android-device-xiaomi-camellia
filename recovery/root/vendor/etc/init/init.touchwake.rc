@@ -3,7 +3,7 @@
 # Watch fb0 blank state and re-kick the NVT driver whenever
 # the framebuffer transitions from blanked to unblanked.
 
-service nvt_touch_wake_watch /system/bin/sh /vendor/etc/init/camellia_touchwake.sh
+service nvt_touch_wake_watch /system/bin/sh /system/bin/camellia.touchwake.sh
     class core
     user root
     group root
