@@ -104,3 +104,8 @@ PRODUCT_COPY_FILES += \
 # Touchfix NVT script hook
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/recovery/root/system/bin/runatboot.sh:recovery/root/system/bin/runatboot.sh
+
+PRODUCT_PACKAGES += \
+    crash_dump32 \
+    crash_dump64
+
