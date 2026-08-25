@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <!-- TWRP device tree for camellia (this repo) -->
+    <project name="rwxrx-rx/twrp-android-device-xiaomi-camellia"
+             path="device/xiaomi/camellia"
+             remote="github"
+             revision="fox_12.1" />
+
+    <!-- Kernel source, built from source instead of prebuilt binaries -->
+    <project name="rwxrx-rx/android_kernel_xiaomi_camellia"
+             path="kernel/xiaomi/camellia"
+             remote="github"
+             revision="lineage-23.2" />
+</manifest>

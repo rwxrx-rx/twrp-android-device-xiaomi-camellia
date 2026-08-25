@@ -61,12 +61,24 @@ BOARD_MKBOOTIMG_ARGS += --dtb_offset $(BOARD_DTB_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
 
 BOARD_KERNEL_IMAGE_NAME := Image
-TARGET_FORCE_PREBUILT_KERNEL := true
+TARGET_FORCE_PREBUILT_KERNEL := false
 ifeq ($(TARGET_FORCE_PREBUILT_KERNEL),true)
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
 BOARD_MKBOOTIMG_ARGS += --dtb $(TARGET_PREBUILT_DTB)
 BOARD_INCLUDE_DTB_IN_BOOTIMG := 
+else
+# Build the kernel from source instead of using a prebuilt binary.
+# Kernel source is checked out by the "Clone Kernel Source" CI step at:
+#   kernel/xiaomi/camellia
+TARGET_KERNEL_SOURCE := kernel/xiaomi/camellia
+TARGET_KERNEL_CONFIG := camellian_gl_defconfig
+TARGET_KERNEL_ARCH := arm64
+TARGET_KERNEL_HEADER_ARCH := arm64
+TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-gnu-
+TARGET_KERNEL_CLANG_COMPILE := true
+BOARD_INCLUDE_DTB_IN_BOOTIMG := true
+BOARD_KERNEL_SEPARATED_DTBO := true
 endif
 
 # Bootloader

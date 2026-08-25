@@ -97,6 +97,12 @@ jobs:
         cd ${{ github.workspace }}/OrangeFox
         git clone -q ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ${{ github.event.inputs.DEVICE_PATH }}
 
+    - name: Clone Kernel Source
+      run: |
+        cd ${{ github.workspace }}/OrangeFox
+        # Must match TARGET_KERNEL_SOURCE in BoardConfig.mk
+        git clone -q https://github.com/rwxrx-rx/android_kernel_xiaomi_camellia -b lineage-23.2 kernel/xiaomi/camellia
+
     - name: Build OrangeFox
       run: |
         cd ${{ github.workspace }}/OrangeFox
