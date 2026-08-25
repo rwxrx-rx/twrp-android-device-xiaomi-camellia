@@ -77,7 +77,7 @@ else
 # by the "Setup Kernel Toolchain" CI step, matching the known-working
 # KonToLKzuu kernel-ci build.
 TARGET_KERNEL_SOURCE := kernel/xiaomi/camellia
-TARGET_KERNEL_CONFIG := camellia_defconfig
+TARGET_KERNEL_CONFIG := camellian_gl_defconfig
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
 TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-android-

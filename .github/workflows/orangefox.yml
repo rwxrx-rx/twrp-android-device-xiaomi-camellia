@@ -111,6 +111,11 @@ jobs:
         cd ${{ github.workspace }}/toolchain
         git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git gcc64
         git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git gcc32
+        # Persist to PATH for every step that runs after this one (and their
+        # subprocesses), not just this step's own shell session.
+        echo "${{ github.workspace }}/toolchain/clang/bin" >> $GITHUB_PATH
+        echo "${{ github.workspace }}/toolchain/gcc64/bin" >> $GITHUB_PATH
+        echo "${{ github.workspace }}/toolchain/gcc32/bin" >> $GITHUB_PATH
 
     - name: Build OrangeFox
       run: |
@@ -123,7 +128,7 @@ jobs:
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL="C"
-        export PATH="${{ github.workspace }}/toolchain/clang/bin:${{ github.workspace }}/toolchain/gcc64/bin:${{ github.workspace }}/toolchain/gcc32/bin:$PATH"
+        which clang && clang --version
         lunch ${{ github.event.inputs.MAKEFILE_NAME }}_${{ github.event.inputs.DEVICE_NAME }}-eng
         
         # Turn strict mode back on
