@@ -103,6 +103,15 @@ jobs:
         # Must match TARGET_KERNEL_SOURCE in BoardConfig.mk
         git clone -q https://github.com/rwxrx-rx/android_kernel_xiaomi_camellia -b lineage-23.2 kernel/xiaomi/camellia
 
+    - name: Setup Kernel Toolchain
+      run: |
+        mkdir -p ${{ github.workspace }}/toolchain/clang
+        cd ${{ github.workspace }}/toolchain/clang
+        git clone --depth=1 https://github.com/kdrag0n/proton-clang.git .
+        cd ${{ github.workspace }}/toolchain
+        git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git gcc64
+        git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git gcc32
+
     - name: Build OrangeFox
       run: |
         cd ${{ github.workspace }}/OrangeFox
@@ -114,6 +123,7 @@ jobs:
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         export LC_ALL="C"
+        export PATH="${{ github.workspace }}/toolchain/clang/bin:${{ github.workspace }}/toolchain/gcc64/bin:${{ github.workspace }}/toolchain/gcc32/bin:$PATH"
         lunch ${{ github.event.inputs.MAKEFILE_NAME }}_${{ github.event.inputs.DEVICE_NAME }}-eng
         
         # Turn strict mode back on

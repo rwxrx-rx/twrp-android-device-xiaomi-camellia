@@ -73,15 +73,20 @@ else
 # Build the kernel from source instead of using a prebuilt binary.
 # Kernel source is checked out by the "Clone Kernel Source" CI step at:
 #   kernel/xiaomi/camellia
+# Toolchain (proton-clang + gcc64/gcc32 binutils) is set up and put on PATH
+# by the "Setup Kernel Toolchain" CI step, matching the known-working
+# KonToLKzuu kernel-ci build.
 TARGET_KERNEL_SOURCE := kernel/xiaomi/camellia
-TARGET_KERNEL_CONFIG := camellia_defconfig
+TARGET_KERNEL_CONFIG := camellian_gl_defconfig
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
-TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-gnu-
+TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-android-
+TARGET_KERNEL_CROSS_COMPILE_ARM32_PREFIX := arm-linux-androideabi-
 TARGET_KERNEL_CLANG_COMPILE := true
+TARGET_KERNEL_CLANG_VERSION := proton-clang
 BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 BOARD_KERNEL_SEPARATED_DTBO := true
-endif 
+endif
 
 # Bootloader
 TARGET_BOOTLOADER_BOARD_NAME := camellia
