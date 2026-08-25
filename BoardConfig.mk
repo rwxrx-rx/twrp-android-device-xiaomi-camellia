@@ -72,7 +72,7 @@ else
 # Kernel source is checked out by the "Clone Kernel Source" CI step at:
 #   kernel/xiaomi/camellia
 TARGET_KERNEL_SOURCE := kernel/xiaomi/camellia
-TARGET_KERNEL_CONFIG := camellian_gl_defconfig
+TARGET_KERNEL_CONFIG := camellia_defconfig
 TARGET_KERNEL_ARCH := arm64
 TARGET_KERNEL_HEADER_ARCH := arm64
 TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-gnu-
