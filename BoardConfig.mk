@@ -61,7 +61,9 @@ BOARD_MKBOOTIMG_ARGS += --dtb_offset $(BOARD_DTB_OFFSET)
 BOARD_MKBOOTIMG_ARGS += --header_version $(BOARD_BOOTIMG_HEADER_VERSION)
 
 BOARD_KERNEL_IMAGE_NAME := Image
-TARGET_FORCE_PREBUILT_KERNEL := false
+# Intentionally left unset (not even := false) — vendor/twrp/build/tasks/kernel.mk
+# checks whether this variable is defined at all, not its value. Leaving it
+# undefined here is what makes it build the kernel from source below.
 ifeq ($(TARGET_FORCE_PREBUILT_KERNEL),true)
 TARGET_PREBUILT_KERNEL := $(DEVICE_PATH)/prebuilt/kernel
 TARGET_PREBUILT_DTB := $(DEVICE_PATH)/prebuilt/dtb.img
@@ -79,7 +81,7 @@ TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-gnu-
 TARGET_KERNEL_CLANG_COMPILE := true
 BOARD_INCLUDE_DTB_IN_BOOTIMG := true
 BOARD_KERNEL_SEPARATED_DTBO := true
-endif
+endif 
 
 # Bootloader
 TARGET_BOOTLOADER_BOARD_NAME := camellia
